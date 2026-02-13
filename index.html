@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/paxeer_icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Paxeer Developer Portal — Build on HyperPaxeer Network" />
+    <title>Paxeer Dev Portal</title>
+    <script>
+      // Prevent flash of wrong theme
+      if (localStorage.getItem('paxeer-theme') === '"light"') {
+        document.documentElement.classList.remove('dark')
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

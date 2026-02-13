@@ -14,8 +14,8 @@ function toggleSidebar() {
   <div class="min-h-screen bg-background">
     <AppSidebar :collapsed="sidebarCollapsed" />
     <div
-      class="transition-all duration-300"
-      :style="{ marginLeft: sidebarCollapsed ? '68px' : '220px' }"
+      class="transition-all duration-300 pb-16 sm:pb-0"
+      :class="sidebarCollapsed ? 'sm:ml-[68px]' : 'sm:ml-[220px]'"
     >
       <AppHeader
         :sidebar-collapsed="sidebarCollapsed"

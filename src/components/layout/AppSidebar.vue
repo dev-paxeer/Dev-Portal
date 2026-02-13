@@ -27,11 +27,12 @@ defineProps<{
 <template>
   <aside
     :class="cn(
-      'fixed left-0 top-0 z-40 flex h-screen flex-col bg-background shadow-lg transition-all duration-300',
-      collapsed ? 'w-[68px]' : 'w-[220px]'
+      'fixed z-40 flex bg-background shadow-lg transition-all duration-300',
+      'bottom-0 left-0 right-0 h-16 flex-row border-t border-border sm:top-0 sm:right-auto sm:h-screen sm:flex-col sm:border-t-0',
+      collapsed ? 'sm:w-[68px]' : 'sm:w-[220px]'
     )"
   >
-    <div class="flex h-16 items-center gap-3 px-4">
+    <div class="hidden sm:flex h-16 items-center gap-3 px-4">
       <div class="flex h-8 w-8 shrink-0 items-center justify-center">
         <img src="/paxeer_icon.svg" alt="Paxeer" class="h-7 w-7 brightness-0 dark:brightness-0 dark:invert" />
       </div>
@@ -41,18 +42,19 @@ defineProps<{
       </div>
     </div>
 
-    <nav class="flex-1 space-y-1 px-2 py-3">
+    <nav class="flex-1 flex items-center justify-around gap-1 px-2 sm:block sm:space-y-1 sm:px-2 sm:py-3">
       <router-link
         v-for="item in navItems"
         :key="item.path"
         :to="item.path"
+        class="flex-1 sm:flex-none"
       >
         <Button
           :variant="(item.path === '/' ? currentPath === '/' : currentPath.startsWith(item.path)) ? 'secondary' : 'ghost'"
           size="sm"
           :class="cn(
-            'w-full justify-start gap-3',
-            collapsed && 'justify-center px-0'
+            'w-full justify-center gap-3 px-0 sm:justify-start sm:px-3',
+            collapsed && 'sm:justify-center sm:px-0'
           )"
         >
           <svg
@@ -66,12 +68,12 @@ defineProps<{
           >
             <path :d="item.icon" />
           </svg>
-          <span v-if="!collapsed">{{ item.label }}</span>
+          <span v-if="!collapsed" class="hidden sm:inline">{{ item.label }}</span>
         </Button>
       </router-link>
     </nav>
 
-    <div class="p-3">
+    <div class="hidden sm:block p-3">
       <div
         :class="cn(
           'flex items-center gap-2 rounded-md bg-muted px-3 py-2',

@@ -1,4 +1,4 @@
-const BASE_URL = 'paxeer-dev-portal.railway.internal'
+const BASE_URL = 'https://paxeer-dev-portal-production.up.railway.app'
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string | number | undefined>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { toast } from 'vue-sonner'
 import {
   getDeployHistory,
   getDeployStatus,
@@ -40,6 +41,9 @@ const job = ref<DeployJob | null>(null)
 const jobError = ref<string | null>(null)
 const polling = ref(false)
 let pollTimer: number | null = null
+
+const didToastComplete = ref(false)
+const didToastFailed = ref(false)
 
 const historyLoading = ref(false)
 const history = ref<DeployJob[]>([])
@@ -159,14 +163,43 @@ async function onSubmit() {
     const args = selected.value.constructorParams.map((p) => constructorArgs.value[p.name] ?? '')
     const res = await submitDeploy(selected.value.id, args, ownerAddress.value.trim())
     jobId.value = res.jobId
+    didToastComplete.value = false
+    didToastFailed.value = false
+    toast.success('Deployment job submitted', {
+      description: `Job ${res.jobId.slice(0, 10)}… is now running. We'll keep updating the status automatically.`,
+    })
     await refreshJob()
     startPolling()
   } catch (e: any) {
     jobError.value = e?.message ?? 'Failed to submit deployment'
+    toast.error('Failed to submit deployment', {
+      description: jobError.value,
+    })
   } finally {
     submitting.value = false
   }
 }
+
+watch(
+  () => job.value?.status,
+  (status) => {
+    if (!status) return
+    if (status === 'complete' && !didToastComplete.value) {
+      didToastComplete.value = true
+      toast.success('Contract deployed', {
+        description: job.value?.contractAddress
+          ? `Deployed at ${job.value.contractAddress.slice(0, 10)}…`
+          : 'Deployment completed successfully.',
+      })
+    }
+    if (status === 'failed' && !didToastFailed.value) {
+      didToastFailed.value = true
+      toast.error('Deployment failed', {
+        description: job.value?.error ? job.value.error.slice(0, 140) : 'The deployment job failed.',
+      })
+    }
+  },
+)
 
 watch(
   () => q.value,
@@ -267,6 +300,76 @@ onUnmounted(() => {
                   </div>
                 </CardHeader>
                 <CardContent v-if="selected" class="space-y-4">
+                  <Card v-if="job?.status === 'complete'" class="shadow-xl">
+                    <CardHeader>
+                      <CardTitle class="text-base">What next?</CardTitle>
+                      <CardDescription>
+                        Your contract is deployed. Here are the most common next steps.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent class="space-y-4">
+                      <div class="grid gap-3 sm:grid-cols-2">
+                        <div class="rounded-xl bg-muted p-4">
+                          <div class="text-[10px] uppercase tracking-wider text-muted-foreground">Contract Address</div>
+                          <div class="mt-2 break-all font-mono text-sm">{{ job.contractAddress ?? '—' }}</div>
+                          <div class="mt-3 flex flex-wrap items-center gap-2">
+                            <Button
+                              variant="secondary"
+                              class="h-9"
+                              :disabled="!job.contractAddress"
+                              @click="copyText(job.contractAddress || ''); toast.success('Copied contract address')"
+                            >
+                              Copy
+                            </Button>
+                            <a
+                              v-if="job.explorerUrl"
+                              :href="job.explorerUrl"
+                              target="_blank"
+                              rel="noreferrer"
+                              class="text-sm text-muted-foreground hover:text-foreground"
+                            >
+                              View on explorer
+                            </a>
+                          </div>
+                        </div>
+
+                        <div class="rounded-xl bg-muted p-4">
+                          <div class="text-[10px] uppercase tracking-wider text-muted-foreground">Deploy Transaction</div>
+                          <div class="mt-2 break-all font-mono text-sm">{{ job.txHash ?? '—' }}</div>
+                          <div class="mt-3 flex flex-wrap items-center gap-2">
+                            <Button
+                              variant="secondary"
+                              class="h-9"
+                              :disabled="!job.txHash"
+                              @click="copyText(job.txHash || ''); toast.success('Copied tx hash')"
+                            >
+                              Copy
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="rounded-xl border border-border p-4">
+                        <div class="text-sm font-medium">Recommended next steps</div>
+                        <div class="mt-2 grid gap-2 text-sm text-muted-foreground">
+                          <div>
+                            1. Verify the contract in the registry (if applicable) so other tools can discover it.
+                          </div>
+                          <div>
+                            2. Run a smoke test: call a read method (or do a small write) to confirm expected behavior.
+                          </div>
+                          <div>
+                            3. Save the address in your app config / deployment notes.
+                          </div>
+                        </div>
+                        <div class="mt-4 flex flex-wrap items-center gap-2">
+                          <Button variant="secondary" class="h-9" @click="router.push('/rpc')">Open RPC tools</Button>
+                          <Button variant="secondary" class="h-9" @click="router.push('/contracts')">Open Registry</Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
                   <div class="rounded-xl bg-muted p-4">
                     <div class="text-xs uppercase tracking-wider text-muted-foreground">Source</div>
                     <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

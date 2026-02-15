@@ -101,19 +101,7 @@ const gasPriceGwei = computed(() => {
   return avg
 })
 
-const fmtUsdCompact = new Intl.NumberFormat(undefined, {
-  style: 'currency',
-  currency: 'USD',
-  notation: 'compact',
-  maximumFractionDigits: 2,
-})
 
-function formatUsdCompact(val: string | null | undefined) {
-  if (!val) return '—'
-  const n = Number(val)
-  if (!Number.isFinite(n)) return val
-  return fmtUsdCompact.format(n)
-}
 
 onMounted(() => {
   fetchData()
@@ -252,21 +240,6 @@ const techStack = ['EVM Compatible', 'Cosmos SDK', 'Solidity ^0.8', 'ERC-20 / 72
           <CardContent class="pt-6">
             <p class="font-mono text-2xl font-bold">125</p>
             <p class="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Chain ID</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div class="mx-auto mt-6 grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2">
-        <Card class="text-center">
-          <CardContent class="pt-6">
-            <p class="font-mono text-2xl font-bold">{{ formatUsdCompact(paxscan?.tvl ?? null) }}</p>
-            <p class="mt-1 text-xs uppercase tracking-wider text-muted-foreground">TVL</p>
-          </CardContent>
-        </Card>
-        <Card class="text-center">
-          <CardContent class="pt-6">
-            <p class="font-mono text-2xl font-bold">{{ formatUsdCompact(paxscan?.market_cap ?? null) }}</p>
-            <p class="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Market Cap</p>
           </CardContent>
         </Card>
       </div>

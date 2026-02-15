@@ -173,7 +173,7 @@ async function onSubmit() {
   } catch (e: any) {
     jobError.value = e?.message ?? 'Failed to submit deployment'
     toast.error('Failed to submit deployment', {
-      description: jobError.value,
+      description: jobError.value ?? undefined,
     })
   } finally {
     submitting.value = false

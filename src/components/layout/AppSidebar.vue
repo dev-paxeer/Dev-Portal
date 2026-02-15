@@ -1,10 +1,19 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 const route = useRoute()
+const router = useRouter()
+
+const moreOpen = ref(false)
 
 const navItems = [
   { path: '/', label: 'Home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1' },
@@ -19,6 +28,16 @@ const navItems = [
 ]
 
 const currentPath = computed(() => route.path)
+
+const primaryMobilePaths = ['/', '/deploy', '/contracts', '/rpc']
+const primaryMobileItems = computed(() => navItems.filter((i) => primaryMobilePaths.includes(i.path)))
+const moreMobileItems = computed(() => navItems.filter((i) => !primaryMobilePaths.includes(i.path)))
+const isMoreActive = computed(() => moreMobileItems.value.some((i) => (i.path === '/' ? currentPath.value === '/' : currentPath.value.startsWith(i.path))))
+
+function navigate(path: string) {
+  moreOpen.value = false
+  router.push(path)
+}
 
 defineProps<{
   collapsed?: boolean
@@ -43,35 +62,98 @@ defineProps<{
       </div>
     </div>
 
-    <nav class="flex-1 flex items-center justify-around gap-1 px-2 sm:block sm:space-y-1 sm:px-2 sm:py-3">
-      <router-link
-        v-for="item in navItems"
-        :key="item.path"
-        :to="item.path"
-        class="flex-1 sm:flex-none"
-      >
-        <Button
-          :variant="(item.path === '/' ? currentPath === '/' : currentPath.startsWith(item.path)) ? 'secondary' : 'ghost'"
-          size="sm"
-          :class="cn(
-            'w-full justify-center gap-3 px-0 sm:justify-start sm:px-3',
-            collapsed && 'sm:justify-center sm:px-0'
-          )"
+    <nav class="flex-1 px-2 sm:block sm:space-y-1 sm:px-2 sm:py-3">
+      <!-- Mobile bottom bar -->
+      <div class="flex h-16 items-center justify-around gap-1 sm:hidden">
+        <router-link
+          v-for="item in primaryMobileItems"
+          :key="item.path"
+          :to="item.path"
+          class="flex-1"
         >
-          <svg
-            class="h-4 w-4 shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+          <Button
+            :variant="(item.path === '/' ? currentPath === '/' : currentPath.startsWith(item.path)) ? 'secondary' : 'ghost'"
+            size="sm"
+            class="h-12 w-full flex-col gap-1 px-0"
           >
-            <path :d="item.icon" />
-          </svg>
-          <span v-if="!collapsed" class="hidden sm:inline">{{ item.label }}</span>
-        </Button>
-      </router-link>
+            <svg
+              class="h-4 w-4 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path :d="item.icon" />
+            </svg>
+            <span class="text-[11px] leading-none">{{ item.label }}</span>
+          </Button>
+        </router-link>
+
+        <DropdownMenu v-model:open="moreOpen">
+          <DropdownMenuTrigger as-child>
+            <Button
+              :variant="isMoreActive ? 'secondary' : 'ghost'"
+              size="sm"
+              class="h-12 w-full flex-1 flex-col gap-1 px-0"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <line x1="4" y1="18" x2="20" y2="18" />
+              </svg>
+              <span class="text-[11px] leading-none">More</span>
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent side="top" align="end" class="mb-2 w-56">
+            <DropdownMenuItem
+              v-for="item in moreMobileItems"
+              :key="item.path"
+              class="cursor-pointer"
+              @select.prevent="navigate(item.path)"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path :d="item.icon" />
+              </svg>
+              <span>{{ item.label }}</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <!-- Desktop sidebar -->
+      <div class="hidden sm:block">
+        <router-link
+          v-for="item in navItems"
+          :key="item.path"
+          :to="item.path"
+          class="flex-1 sm:flex-none"
+        >
+          <Button
+            :variant="(item.path === '/' ? currentPath === '/' : currentPath.startsWith(item.path)) ? 'secondary' : 'ghost'"
+            size="sm"
+            :class="cn(
+              'w-full justify-center gap-3 px-0 sm:justify-start sm:px-3',
+              collapsed && 'sm:justify-center sm:px-0'
+            )"
+          >
+            <svg
+              class="h-4 w-4 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path :d="item.icon" />
+            </svg>
+            <span v-if="!collapsed" class="hidden sm:inline">{{ item.label }}</span>
+          </Button>
+        </router-link>
+      </div>
     </nav>
 
     <div class="hidden sm:block p-3">

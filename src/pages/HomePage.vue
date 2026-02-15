@@ -159,9 +159,9 @@ const techStack = ['EVM Compatible', 'Cosmos SDK', 'Solidity ^0.8', 'ERC-20 / 72
 <template>
   <div>
     <!-- ═══ HERO ═══ -->
-    <section class="px-6 pb-16 pt-16 lg:px-8 lg:pt-24">
+    <section class="px-4 pb-10 pt-10 sm:px-6 sm:pb-16 sm:pt-16 lg:px-8 lg:pt-24">
       <div class="mx-auto w-full max-w-[1080px]">
-        <div class="relative w-full overflow-hidden rounded-[32px] bg-muted aspect-[1080/500]">
+        <div class="relative w-full overflow-hidden rounded-2xl bg-muted aspect-[4/5] sm:rounded-[32px] sm:aspect-[1080/500]">
           <video
             class="absolute inset-0 h-full w-full object-cover"
             autoplay
@@ -175,8 +175,8 @@ const techStack = ['EVM Compatible', 'Cosmos SDK', 'Solidity ^0.8', 'ERC-20 / 72
 
           <div class="absolute inset-0 bg-background/40" />
 
-          <div class="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
-            <Badge variant="secondary" class="mb-5">
+          <div class="relative z-10 flex h-full flex-col items-center justify-center px-5 text-center sm:px-6">
+            <Badge variant="secondary" class="mb-4 sm:mb-5">
               <span class="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
               Mainnet Live &mdash; Block #{{ formattedBlock }}
             </Badge>
@@ -185,14 +185,14 @@ const techStack = ['EVM Compatible', 'Cosmos SDK', 'Solidity ^0.8', 'ERC-20 / 72
               Build on HyperPaxeer
             </h1>
 
-            <p class="mx-auto mt-4 max-w-2xl body-default text-muted-foreground">
+            <p class="mx-auto mt-3 max-w-2xl body-default text-muted-foreground sm:mt-4">
               The developer platform for the next generation of decentralized applications.
               Deploy contracts, scaffold projects, and interact with the chain — all from one place.
             </p>
 
-            <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
-              <router-link to="/getting-started">
-                <Button size="lg">
+            <div class="mt-6 flex w-full flex-col gap-3 sm:mt-7 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
+              <router-link to="/getting-started" class="w-full sm:w-auto">
+                <Button size="lg" class="h-11 w-full sm:w-auto">
                   Get Started
                   <svg class="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12" />
@@ -200,8 +200,8 @@ const techStack = ['EVM Compatible', 'Cosmos SDK', 'Solidity ^0.8', 'ERC-20 / 72
                   </svg>
                 </Button>
               </router-link>
-              <router-link to="/deploy">
-                <Button variant="outline" size="lg">
+              <router-link to="/deploy" class="w-full sm:w-auto">
+                <Button variant="outline" size="lg" class="h-11 w-full sm:w-auto">
                   <svg class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
@@ -210,7 +210,7 @@ const techStack = ['EVM Compatible', 'Cosmos SDK', 'Solidity ^0.8', 'ERC-20 / 72
               </router-link>
             </div>
 
-            <div class="mt-8 flex flex-wrap items-center justify-center gap-2">
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-2 sm:mt-8">
               <Badge v-for="t in techStack" :key="t" variant="secondary">{{ t }}</Badge>
             </div>
           </div>

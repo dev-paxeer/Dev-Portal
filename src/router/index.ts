@@ -53,6 +53,11 @@ const router = createRouter({
       name: 'getting-started',
       component: () => import('@/pages/GettingStartedPage.vue'),
     },
+    {
+      path: '/hackathon',
+      name: 'hackathon',
+      component: () => import('@/pages/HackathonPage.vue'),
+    },
   ],
   scrollBehavior(_to, _from, savedPosition) {
     if (savedPosition) return savedPosition
